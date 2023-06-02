@@ -50,7 +50,7 @@ Your SNS-IP will be reviewed by the maintainers and the community. Comments, que
 <h2 align="center">Contributing</h2>
 <br />
 
-We encourage community participation in our project. If you would like to contribute, please start by familiarizing yourself with our SNS-IP process. When you're ready, follow the instructions for submitting an SNS-IP. Please ensure that your proposal is clear and complete before submission. Once your SNS-IP is submitted, maintainers and the community will review it and may propose changes or improvements. Constructive discussion is welcome, and we ask all participants to respect each other's perspectives and ideas. Your contributions are highly appreciated, and we look forward to building a better protocol together.
+We greatly value community participation in our project. To begin contributing, we ask you first to familiarize yourself with our SNS-IP process. Once you've done this, the first step in proposing changes is to open an issue for discussion. Clearly outline your suggested changes and ideas for our community to review and discuss. After thorough discussion and when you feel ready, you can then proceed to the next step - submitting an SNS-IP via a pull request. Please ensure that your proposal is comprehensive and well-articulated prior to submission. Once your SNS-IP has been submitted via a pull request, both maintainers and the community will review it, potentially proposing amendments or enhancements.
 
 <br />
 <h2 align="center">Contact</h2>
