@@ -42,6 +42,10 @@ For each record type, we propose to establish a standardized encoding format.
 - **BSC**: BSC addresses should be represented as a 20-byte array.
 - **Injective (INJ)**: Injective addresses should be represented as 20-byte array.
 - **Backpack**: A UTF-8 Backpack username string.
+- **A**: As defined in [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035)
+- **AAAA**: As defined in [RFC 3596](https://datatracker.ietf.org/doc/rfc3596/)
+- **CNAME**: As defined in [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035)
+- **TXT**: As defined in [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035)
 
 ## Rationale
 
