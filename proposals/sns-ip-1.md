@@ -47,6 +47,10 @@ For each record type, we propose to establish a standardized encoding format.
 - **CNAME**: As defined in [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035)
 - **TXT**: As defined in [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035)
 
+### Serialization and deserialization of records containing UTF-8 strings
+
+These Records **SHOULD** be encoded as UTF-8 in a precisely sized account. These Records **MUST** be decoded as a UTF-8 string, truncating to the last non-null character
+
 ## Rationale
 
 The standardization of encoding for each record type will eliminate unpredictability and inconsistencies in the system. It will also enhance the robustness of the protocol by ensuring that the encoding and decoding processes are reliable and deterministic.
