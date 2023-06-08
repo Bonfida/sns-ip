@@ -26,9 +26,9 @@ For each record type, we propose to establish a standardized encoding format.
 - **ARWV**: A UTF-8 Arweave hash string.
 - **SOL**: A 96-byte array representing a concatenation of a public key (32 bytes) and a signature (64 bytes).
 - **ETH**: Ethereum addresses should be represented as a 20-byte array.
-- **BTC**: Bitcoin addresses should be represented as a 35-byte array. This accommodates the maximum byte length across all Bitcoin address types (P2PKH, P2SH and Bech32). The specific format is up to the client interpretation based on the actual length and contents of the address. TODO: Verify
-- **LTC**: Litecoin addresses should be represented as a 33-byte array. TODO: Verify
-- **DOGE**: Dogecoin addresses should be represented as a 34-byte array. TODO: Verify
+- **BTC**: Bitcoin addresses should be represented as a UTF-8 encoded string. This approach simplifies client-side deserialization due to the multiple possible formats, accommodating all Bitcoin address types (P2PKH, P2SH, and Bech32).
+- **LTC**: Litecoin addresses should also be represented as a UTF-8 encoded string. This streamlines client-side deserialization, taking into account the varying potential formats.
+- **DOGE**: Dogecoin addresses should be represented as a UTF-8 encoded string as well. This ensures ease of client-side deserialization, considering the several possible formats.
 - **Email**: A UTF-8 email address string.
 - **URL**: A valid URL string.
 - **Discord**: A UTF-8 Discord username string.
