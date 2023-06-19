@@ -31,17 +31,17 @@ For each record type, we propose to establish a standardized encoding format.
 - **DOGE**: Dogecoin addresses should be represented as a UTF-8 encoded string as well. This ensures ease of client-side deserialization, considering the several possible formats.
 - **Email**: A UTF-8 email address string.
 - **URL**: A valid URL string.
-- **Discord**: A UTF-8 Discord username string. Must not be prefixed by @.
-- **Github**: A UTF-8 Github username string. Must not be prefixed by @.
-- **Reddit**: A UTF-8 Reddit username string. Must not be prefixed by @.
-- **Twitter**: A UTF-8 Twitter username string. Must not be prefixed by @.
-- **Telegram**: A UTF-8 Telegram username string. Must not be prefixed by @.
+- **Discord**: A UTF-8 Discord username string. Must not be prefixed by the @ character.
+- **Github**: A UTF-8 Github username string. Must not be prefixed by the @ character.
+- **Reddit**: A UTF-8 Reddit username string. Must not be prefixed by the @ character.
+- **Twitter**: A UTF-8 Twitter username string. Must not be prefixed by the @ character.
+- **Telegram**: A UTF-8 Telegram username string. Must not be prefixed by the @ character.
 - **Pic**: An URL string pointing to a profile picture.
 - **SHDW**: A Shadow drive address string.
 - **POINT**: A Point network record string.
 - **BSC**: BSC addresses should be represented as a 20-byte array.
 - **Injective (INJ)**: Injective addresses should be represented as 20-byte array.
-- **Backpack**: A UTF-8 Backpack username string. Must not be prefixed by @.
+- **Backpack**: A UTF-8 Backpack username string. Must not be prefixed by the @ character.
 - **A**: As defined in [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035)
 - **AAAA**: As defined in [RFC 3596](https://datatracker.ietf.org/doc/rfc3596/)
 - **CNAME**: As defined in [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035)
@@ -49,7 +49,7 @@ For each record type, we propose to establish a standardized encoding format.
 
 ### Serialization and deserialization of records containing UTF-8 strings
 
-These Records **SHOULD** be encoded as UTF-8 in a precisely sized account. These Records **MUST** be decoded as a UTF-8 string, truncating to the last non-null character
+These Records **SHOULD** be encoded as UTF-8 in a precisely sized account. These Records **MUST** be decoded as a UTF-8 string, truncating to the last non-null byte
 
 ## Rationale
 
