@@ -6,7 +6,7 @@
 
 Bonfida
 
-## Status: Draft
+## Status: Accepted
 
 ## Created: June 1, 2023
 
