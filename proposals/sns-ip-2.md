@@ -29,6 +29,18 @@ To tackle these issues, there's a need for a system that enhances record integri
 A Borsh implementation in Javascript
 
 ```js
+export enum GuardianSig {
+  None = 0,
+  Solana = 1,
+  Ethereum = 2,
+  Injective = 3,
+}
+
+export enum UserSig {
+  None = 0,
+  Solana = 1,
+}
+
 export class RecordV2Header {
   userSignature: UserSig;
   guardianSignature: GuardianSig;
@@ -86,6 +98,14 @@ export class RecordV2 {
 ```
 
 The rest of the JS implementation can be found here: https://github.com/Bonfida/sns-sdk/pull/15
+
+We are expecting the following signature types on launch:
+
+- Solana (64 bytes)
+- Ethereum (65 bytes)
+- Injective (65 bytes)
+
+When the record is not signed, the signature tag should be the `None` enum variant.
 
 ## Rationale
 
