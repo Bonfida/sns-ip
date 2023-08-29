@@ -22,19 +22,81 @@ As adapted from the rejected SNS-IP 2, there are two significant issues currentl
 
 - **Staleness of Records**: When domain names are traded, records associated with these domains can become outdated but remain accessible, leading to potential misinformation or misuse.
 
-- **Right of association**: It is challenging to verify that the domain owner genuinely has the right to associate with the resources linked in the records. This ambiguity paves the way for impersonation and poses a security risk.
+- **Right of association** (RoA): It is challenging to verify that the domain owner genuinely has the right to associate with the resources linked in the records. This ambiguity paves the way for impersonation and poses a security risk.
 
 To tackle these issues, this proposal describes a system that specifically handles these issues, while remaining usable in both on and off-chain contexts.
 
 ## Specification
 
-The record account contents will exactly match those described in SNS-IP-1.
 The record derivation path will change and amends the initial SNS specification.
 Records will stay subdomains, but will also become a `class` derived from the certification smart contract's central authority.
+The record's account verifications are described within its contents, which ensures that expected signature types for particular records can be changed in light of potentially arising security considerations.
+
+```text
+
+ 0                   1                   2                   3                   4                   5                   6       
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   Staleness Validation Type   |      RoA Signature Type       |                        Content-Length                         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                                                                                               |
++                                                   Staleness verification Id                                                   +
+                                                               ...                                                               
++                                                          (S*8 bytes)                                                          +
+|                                                                                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                                                                                               |
++                                                      RoA verification Id                                                      +
+                                                               ...                                                               
++                                                          (G*8 bytes)                                                          +
+|                                                                                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                                                                                               |
++                                                        Record Content                                                         +
+                                                               ...                                                               
++                                                          (C*8 bytes)                                                          +
+|                                                                                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+```
 
 ### Certification smart contract interface
 
-TBD
+All supported record types will have at most two associated validation steps (one for each motivating concern).
+The first instruction will publish the pending record contents with `None` validation types.
+Then each validation step will be performed in turn.
+Any edit to the record contents will switch the validations to `None`.
+In theory, the entire validation can be performed in one transaction containing three instructions (or more in the case of Ethereum validation).
+
+One useful side-effect of using runtime Solana signing validation is that smart contract PDAs can be certification authorities, in which case a CPI call to `ValidateSolanaSignature` will perform the validation.
+
+```rust
+
+#[repr(u32)]
+pub enum Validation {
+    None,
+    SolanaSignature,
+    EthereumSignature,
+    ..
+}
+
+struct RecordBufferHeader {
+    staleness_validation_type: Validation,
+    staleness_validation_id: [u8;32],
+    right_of_association_validation: Validation
+}
+
+pub enum Instruction {
+    AllocateRecord {length: usize },
+    AllocateAndPostRecord { contents: Vec<u8> },
+    EditRecord { contents: Vec<u8>, offset: usize },
+    // This instruction will check that the proper authority signed the transaction
+    ValidateSolanaSignature,
+    // This instruction will use the ed25513 validation flow natively supported by Solana
+    // https://docs.solana.com/developing/runtime-facilities/programs#ed25519-program
+    ValidateEthereumSignature
+}
+
+```
 
 ## Rationale
 
