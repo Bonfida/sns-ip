@@ -71,7 +71,7 @@ One useful side-effect of using runtime Solana signing validation is that smart 
 
 ```rust
 
-#[repr(u32)]
+#[repr(u16)]
 pub enum Validation {
     None,
     SolanaSignature,
@@ -81,7 +81,8 @@ pub enum Validation {
 
 struct RecordHeader {
     staleness_validation_type: Validation,
-    right_of_association_validation_type: Validation
+    right_of_association_validation_type: Validation,
+    content_length: u32
 }
 
 pub enum Instruction {
