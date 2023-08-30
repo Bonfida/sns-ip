@@ -79,10 +79,9 @@ pub enum Validation {
     ..
 }
 
-struct RecordBufferHeader {
+struct RecordHeader {
     staleness_validation_type: Validation,
-    staleness_validation_id: [u8;32],
-    right_of_association_validation: Validation
+    right_of_association_validation_type: Validation
 }
 
 pub enum Instruction {
