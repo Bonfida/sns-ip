@@ -30,7 +30,7 @@ To tackle these issues, this proposal describes a system that specifically handl
 
 The record derivation path will change and amends the initial SNS specification.
 Records will stay subdomains, but will also become a `class` derived from the certification smart contract's central authority.
-The record's account verifications are described within its contents, which ensures that expected signature types for particular records can be changed in light of potentially arising security considerations.
+The record's account verifications are described within its contents, which ensures that expected validation types for particular records can be changed in light of potentially arising security considerations.
 
 ```text
 
@@ -74,8 +74,8 @@ One useful side-effect of using runtime Solana signing validation is that smart 
 #[repr(u16)]
 pub enum Validation {
     None,
-    SolanaSignature,
-    EthereumSignature,
+    Solana,
+    Ethereum,
     ..
 }
 
@@ -85,7 +85,7 @@ struct RecordHeader {
     content_length: u32
 }
 
-pub enum Instruction {
+pub enum CertificationInstruction {
     AllocateRecord {length: usize },
     AllocateAndPostRecord { contents: Vec<u8> },
     EditRecord { contents: Vec<u8>, offset: usize },
@@ -97,6 +97,34 @@ pub enum Instruction {
 }
 
 ```
+
+### An example, the SOL record
+
+In order to create a `SOL` record with value `JAUP6N2Jayt7nZJgqDX79zcHdcg4B5FuVDFbyt3LvbpP`, for domain `test.sol` which is owned by `CaN5H4fXGy1kJoJ6Mhgof1g9hxqppvoTpmzmx137rx2q`,  we need to execute three instructions in sequence.
+
+First we need to execute an `AllocateandPostRecord` instruction signed by the domain owner with an empty vector as the contents parameter.
+The contents parameter is empty in this particular case because the SOL record will resolve to the RoA validation id.
+Otherwise we would just be writing the `SOL` record address twice in the account, and adding an unnecessary verification step.
+
+Then, we need to execute a `ValidateSolanaSignature` instruction signed by the domain owner to execute staleness validation.
+This will write `CaN5H4fXGy1kJoJ6Mhgof1g9hxqppvoTpmzmx137rx2q` in byte vector format to the staleness validation id field in the the record account.
+
+Finally, we need to execute another `ValidateSolanaSignature` instruction this time signed by `JAUP6N2Jayt7nZJgqDX79zcHdcg4B5FuVDFbyt3LvbpP` to execute RoA validation and, in this particular case, set the actual resolution.
+This will write `JAUP6N2Jayt7nZJgqDX79zcHdcg4B5FuVDFbyt3LvbpP` in byte vector format to the RoA validation id field in the record account.
+
+Then, any application which makes use of the record will validate it by checking that the staleness validation id field corresponds to the parent domain's current owner.
+In the generic case, we would also have to check that the RoA validation id field is pertinent to the record's value, but this logic will be specific to each record type.
+
+
+### Implementing new record types
+
+This specification allows for the creation of custom record types as long as they just make use of already supported validation methods.
+In order to avoid name space collisions, there will be a process to register new applications and officially allocate associated record types.
+It will be possible to request native support for new validation methods as part of the SNS-IP process.
+
+Once a record type is allocated to an application team, they have free reign over the kind of expected validation types to expect and enforce.
+This specification allows these expectations to evolve over time, depending on the needs of the application itself.
+Complex custom validation can be implemented as a separate smart contract, with an associated certification PDA.
 
 ## Rationale
 
