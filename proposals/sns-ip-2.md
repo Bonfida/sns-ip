@@ -2,17 +2,21 @@
 
 ## Title: Record V2
 
-## Author:
+## Author
 
 Bonfida
 
-## Status: Draft
+## Status: Rejected
 
 ## Created: August 9th, 2023
 
 ## Abstract
 
 This SNS-IP proposes an enhancement to the existing SNS records system to address concerns related to the staleness of records and the authenticity of linked resources. Specifically, it introduces mechanisms to verify the ownership of resources and handle outdated records. The related issue can be found here: https://github.com/Bonfida/sns-ip/issues/4
+
+## SNS-IP Rejection Notice
+
+Due to concerns outlined in SNS-IP 3 regarding the prohibitive compute costs of-chain validation of the proposed records, this proposal has been rejected in favor of a smart-contract based approach which ensures that all published records can be validated by trusting the record's metadata.
 
 ## Motivation
 
