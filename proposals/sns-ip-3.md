@@ -34,29 +34,29 @@ The record's account verifications are described within its contents, which ensu
 
 ```text
 
- 0                   1                   2                   3                   4                   5                   6       
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 
+ 0                   1                   2                   3                   4                   5                   6
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |   Staleness Validation Type   |      RoA Signature Type       |                        Content-Length                         |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                                                                                               |
 +                                                   Staleness verification Id                                                   +
-                                                               ...                                                               
+                                                               ...
 +                                                          (S*8 bytes)                                                          +
 |                                                                                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                                                                                               |
 +                                                      RoA verification Id                                                      +
-                                                               ...                                                               
+                                                               ...
 +                                                          (G*8 bytes)                                                          +
 |                                                                                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                                                                                               |
 +                                                        Record Content                                                         +
-                                                               ...                                                               
+                                                               ...
 +                                                          (C*8 bytes)                                                          +
 |                                                                                                                               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
 ### Certification smart contract interface
@@ -86,13 +86,13 @@ struct RecordHeader {
 }
 
 pub enum CertificationInstruction {
-    AllocateRecord {length: usize },
+    AllocateRecord { length: usize },
     AllocateAndPostRecord { contents: Vec<u8> },
     EditRecord { contents: Vec<u8>, offset: usize },
     // This instruction will check that the proper authority signed the transaction
     ValidateSolanaSignature,
-    // This instruction will use the ed25513 validation flow natively supported by Solana
-    // https://docs.solana.com/developing/runtime-facilities/programs#ed25519-program
+    // This instruction will use the Secp256k1 validation flow natively supported by Solana
+    // https://docs.solana.com/developing/runtime-facilities/programs#secp256k1-program
     ValidateEthereumSignature
 }
 
@@ -100,7 +100,7 @@ pub enum CertificationInstruction {
 
 ### An example, the SOL record
 
-In order to create a `SOL` record with value `JAUP6N2Jayt7nZJgqDX79zcHdcg4B5FuVDFbyt3LvbpP`, for domain `test.sol` which is owned by `CaN5H4fXGy1kJoJ6Mhgof1g9hxqppvoTpmzmx137rx2q`,  we need to execute three instructions in sequence.
+In order to create a `SOL` record with value `JAUP6N2Jayt7nZJgqDX79zcHdcg4B5FuVDFbyt3LvbpP`, for domain `test.sol` which is owned by `CaN5H4fXGy1kJoJ6Mhgof1g9hxqppvoTpmzmx137rx2q`, we need to execute three instructions in sequence.
 
 First we need to execute an `AllocateandPostRecord` instruction signed by the domain owner with an empty vector as the contents parameter.
 The contents parameter is empty in this particular case because the SOL record will resolve to the RoA validation id.
@@ -114,7 +114,6 @@ This will write `JAUP6N2Jayt7nZJgqDX79zcHdcg4B5FuVDFbyt3LvbpP` in byte vector fo
 
 Then, any application which makes use of the record will validate it by checking that the staleness validation id field corresponds to the parent domain's current owner.
 In the generic case, we would also have to check that the RoA validation id field is pertinent to the record's value, but this logic will be specific to each record type.
-
 
 ### Implementing new record types
 
