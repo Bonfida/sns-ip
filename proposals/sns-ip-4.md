@@ -38,12 +38,12 @@ The current absolute identity system allows users to attach specific information
 Thanks to SNS-IP-3, this information can be externally validated which means that users can't just say anything about themselves.
 This does introduce a degree of relative truth: if one says that K is their Solana public key through the records system, then it means they have certified they are indeed the owner of that public key.
 There is no doubt in this context that they are indeed a member of the Solana community under that _alias_.
-However, the records system is designed to slowly incorporate new elements of identity, and cannot scale as fast as the growing numbers of community in the web3 ecosystem.
+However, the records system is designed to slowly incorporate new elements of identity, and cannot scale as fast as the growing number of communities in the web3 ecosystem.
 
 This means that communities and organizations should be given the means to administer their own relative identity systems.
 We find that in practice these relative identity systems can be broadly split into two categories: _role-based_ and _username-based_.
 Roles can be assigned and reassigned by the parent community or organization, which means that the owning entity retains full control over their _role-based_ domain.
-Usernames are immutable and only the user can choose to abandon their username (banning is possible, but preventing impersonation means that a username can't be reused in the event of a ban).
+Usernames are immutable and only the user can choose to abandon their username (banning is possible, but preventing impersonation means that a username can't be reused immediately in the event of a ban).
 This means that the owning entity relinquishes some of its control to an external smart contract which is responsible for enforcing _ownership immutability_ and preventing _impersonation_.
 
 
@@ -56,7 +56,7 @@ This means that the owning entity relinquishes some of its control to an externa
 | subdomain id  | the first part of the subdomain url  | `alpha`                                        |
 | domain id     | the second part of the subdomain url | `bonfida`                                      |
 | domain key    | the parent domain's account key      | `Crf8hzfthWGbGbLTVCiqRqV5MVnbpHB1L9KQMd6gsinb` |
-| subdomain key | the subdomain's account key          | <TODO>                                         |
+| subdomain key | the subdomain's account key          | `6ZhzgE6RahsbombA7Fem2EyTMD97oyPqsL19yxcEWyp4` |
 
 A subdomain id has to be valid under the latest SNS guidelines for domain names.
 In particular, this means that uppercase and invisible characters are invalid.
@@ -68,16 +68,17 @@ The subdomain is then defined as the child of the parent domain under the spl-na
 
 For role-based identity systems, the owner of the parent domain is free to create subdomains as they please, with a meaning defined within the organization. 
 Due to this lack of restrictions, a username-based identity system (UIS) cannot be subordinated to a role-based identity system.
-However, a RIS can be upgraded to a UIS at any time by transfering ownership through the `sub-registrar` community contract (as of writing under the supervision of the Bonfida organization).
-A domain `a.sol` is said to be a _RIS_ when it is _not_ owned by the `sub-regsitrar` program.
+However, a RIS can be upgraded to a UIS at any time by transfering ownership to the `sub-registrar` community contract (as of writing under the supervision of Bonfida).
+A domain `a.sol` is said to be a _RIS_ when it is _not_ owned by the `sub-registrar` program.
 
 ### Username-based identity system (UIS)
 
-In a user-based identity systems, users are free to create their own username subdomains as long as they meet a certain set of requirements which are defined by the parent organization.
+In a username-based identity systems, users are free to create their own username subdomains as long as they meet a certain set of requirements which are defined by the parent organization.
 The parent organization can at any time create new subdomains and bypass those restrictions using an admin authority.
 The UIS domain's parent has to be the `.sol` root in order to reliably enforce immutability.
 In the future, this requirement can be relaxed to also allow the parent domain to be a certified UIS itself.
-However, it is impossible for an organization to delete an existing subdomain without the consent of its current owner.
+However, it is impossible for an organization to delete an existing subdomain without the consent of its current owner, unless the entire domain is configured to allow for admin revokes.
+In this case, a minimum delay of 1 week is enforced before the subdomain can be registered again.
 Unless all subdomains registered through the `sub-registrar` UIS enforcer are closed, a domain cannot be down-graded to a RIS, and its ownership cannot be transfered.
 This means that domain owners have to administer the domain through the UIS enforcer's primitives.
 
@@ -88,31 +89,26 @@ Summary of `sub-registrar` instructions:
 | Index | Instruction           | Description                                                                                                                               |
 |-------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
 | 0     | CreateRegistrar       | Transfers ownership of a domain to the UIS enforcer, and defines subdomain registration, allowable admin action rules and admin authority |
-| 1     | CreateRegistrar       | Edits subdomain registration rules                                                                                                        |
-| 2     | CreateRegistrar       | Edits subdomain registration rules and admin authority                                                                                    |
+| 1     | EditRegistrar         | Edits subdomain registration rules                                                                                                        |
 | 2     | Register              | Endpoint through which users can create their own subdomains                                                                              |
-| 3     | Register              | Endpoint through which users delete their own subdomains                                                                                  |
+| 3     | Unregister            | Endpoint through which users delete their own subdomains                                                                                  |
 | 4     | CloseRegistrar        | Unwraps the domain and transfers ownership from the UIS enforcer. This is only possible if all subdomains are closed                      |
 | 5     | AdminRegister         | With an admin signature, creates a subdomain and bypasses registration requirements                                                       |
 | 6     | DeleteSubdomainRecord | Delete a subdomain record account                                                                                                         |
-| 7     | AdminRevoke           | Revokes a subdomain with admin consent                                                                                                    |
+| 7     | AdminRevoke           | Revokes a subdomain with admin consent, when the domain is configured to allow it                                                         |
 | 8     | NftOwnerRevoke        | Revokes a subdomain with nft-holder consent, in the case of nft-based registration rules                                                  |
-
-
-## Rationale
-
-TBD
 
 ## Backwards Compatibility
 
 While there are sporadic implementations of a subdomain system, most reference implementations do not officially support this.
-This means that this SNS-IP is an extension of spec with little potential to break backwards compatibility in current production systems.
+This means that this SNS-IP is an extension of existing specification with little potential to break backwards compatibility in current production systems.
 
 ## Security Considerations
 
-When resolving a subdomain, app developers MUST determine if the subdomain is of RIS or UIS type.
-If a subdomain is UIS, then it can be trusted.
-if a subdomain is RIS, the app developer SHOULD assert that the user trusts the parent entity, and MUST at least verify that they trust the parent entity.
+When resolving a subdomain, app developers MUST determine if the parent domain is of RIS or UIS type.
+- If the parent domain is a UIS, then it can be trusted. 
+    - When the parent domain allows for admin revokes, it is considered best practice to display the latest timestamp of revocation, for added safety.
+- If the parent domain is a RIS, the app developer SHOULD verify that the user trusts the parent entity. In the absence of explicit and informed user consent, the app developer MUST verify that they trust the parent entity. This trust SHOULD be established on a per-transaction basis.
 
 ## Test Cases
 
@@ -120,7 +116,7 @@ Test cases for will be published as part of the reference implementation as it c
 
 ## Implementation
 
-The sns-sdk and sub-registrar repos will serve as reference implementations of the RIS and UIS specs respectively
+The sns-sdk and sub-registrar repos will serve as reference implementations of the RIS and UIS specs respectively.
 
 ## References
 
