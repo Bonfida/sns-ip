@@ -10,6 +10,8 @@ Bonfida
 
 ## Created: June 1, 2023
 
+## Updated: June 3, 2024
+
 ## Abstract
 
 This proposal aims to standardize the data encoding in each record type for the Solana Name Service. Currently, the content of each record lacks a standardized format, which can lead to inconsistencies and unpredictable behavior. By clarifying the encoding rules for each record content, we aim to improve predictability and ease of use.
@@ -23,6 +25,7 @@ Current implementations of SNS domain records show inconsistency in the encoding
 For each record type, we propose to establish a standardized encoding format.
 
 - **IPFS**: A UTF-8 IPFS CID string.
+- **IPNS**: A UTF-8 encoded IPNS name string.
 - **ARWV**: A UTF-8 Arweave hash string.
 - **SOL**: A 96-byte array representing a concatenation of a public key (32 bytes) and a signature (64 bytes).
 - **ETH**: Ethereum addresses should be represented as a 20-byte array.
