@@ -100,7 +100,7 @@ It also maintains compatibility with record V1 users, as it continues to use it 
 
 ## Implementation
 
-TODO
+https://github.com/Bonfida/sns-sdk/blob/d82f1ceaeb8c4fa436b585fc5bea25516aacb3fc/js/src/resolve/resolve.ts
 
 ## References
 
